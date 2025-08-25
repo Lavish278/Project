@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Connect - Grades / Results</title>
+    <!-- FontAwesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-blue);
+            margin-bottom: 2rem;
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--bg-neutral);
+        }
+
+        th {
+            background: var(--bg-neutral);
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .grade-A {
+            color: var(--success-green);
+            font-weight: bold;
+        }
+        .grade-B {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+        .grade-C {
+            color: var(--warning-yellow);
+            font-weight: bold;
+        }
+        .grade-F {
+            color: var(--error-red);
+            font-weight: bold;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">3</span>
+            </i>
+            <i class="fas fa-question-circle nav-icon" title="Help"></i>
+            <i class="fas fa-user-circle nav-icon" title="Profile"></i>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="courses.html"><i class="fas fa-book"></i> My Courses</a></li>
+            <li><a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+            <li><a href="grades.html" class="active"><i class="fas fa-chart-line"></i> Grades / Results</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> Personal Details</a></li>
+            <li><a href="mentor.html"><i class="fas fa-chalkboard-teacher"></i> Mentor</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="help.html"><i class="fas fa-life-ring"></i> Help Desk</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Grades / Results</h1>
+            <p>View your subject-wise grades and overall performance.</p>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-chart-line card-icon"></i> Subject-wise Grades</h3>
+            <table id="gradesTable">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Grade</th>
+                        <th>Score (%)</th>
+                        <th>Credits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-award card-icon"></i> GPA Summary</h3>
+            <div class="stat-number" id="gpaValue">--</div>
+            <div class="stat-label" id="gpaLabel">Loading...</div>
+        </div>
+    </main>
+
+    <script>
+        // Backend-ready: Fetch grades from API and populate the table
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchGrades();
+        });
+
+        async function fetchGrades() {
+            // Example API endpoint:
+            // const response = await fetch('/api/grades');
+            // const data = await response.json();
+
+            // For demonstration, using static data:
+            const data = {
+                gpa: 8.2,
+                gpaLabel: "Excellent performance this semester!",
+                grades: [
+                    { subject: "Data Structures", grade: "A", score: 91, credits: 4 },
+                    { subject: "Cloud Computing", grade: "B", score: 82, credits: 3 },
+                    { subject: "Operating Systems", grade: "A", score: 89, credits: 4 },
+                    { subject: "Discrete Mathematics", grade: "C", score: 71, credits: 3 },
+                    { subject: "Microprocessors", grade: "F", score: 45, credits: 2 }
+                ]
+            };
+
+            // GPA summary
+            document.getElementById('gpaValue').textContent = data.gpa + " / 10";
+            document.getElementById('gpaLabel').textContent = data.gpaLabel;
+
+            // Grades table
+            const tbody = document.querySelector('#gradesTable tbody');
+            tbody.innerHTML = '';
+            data.grades.forEach(item => {
+                let gradeClass = '';
+                if (item.grade === "A") gradeClass = 'grade-A';
+                else if (item.grade === "B") gradeClass = 'grade-B';
+                else if (item.grade === "C") gradeClass = 'grade-C';
+                else gradeClass = 'grade-F';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.subject}</td>
+                    <td class="${gradeClass}">${item.grade}</td>
+                    <td>${item.score}%</td>
+                    <td>${item.credits}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>

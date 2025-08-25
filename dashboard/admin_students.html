@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Students</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+        .content {
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+        }
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .search-bar {
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .search-bar input {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            width: 250px;
+        }
+        .add-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-left: auto;
+        }
+        .add-btn:hover {
+            background: var(--success-green);
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .user-table th, .user-table td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .user-table th {
+            background: var(--bg-neutral);
+            color: var(--primary-blue);
+        }
+        .user-table td {
+            background: var(--white);
+        }
+        .user-action-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-right: 0.3rem;
+            transition: var(--transition);
+        }
+        .user-action-btn.delete {
+            background: var(--error-red);
+        }
+        .user-action-btn:hover {
+            opacity: 0.85;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect Admin</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">5</span>
+            </i>
+            <i class="fas fa-user-shield nav-icon" title="Admin Profile"></i>
+            <i class="fas fa-sign-out-alt nav-icon" title="Logout"></i>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="admin_dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="admin_students.html" class="active"><i class="fas fa-users"></i> Manage Students</a></li>
+            <li><a href="admin_faculty.html"><i class="fas fa-user-tie"></i> Manage Faculty</a></li>
+            <li><a href="admin_courses.html"><i class="fas fa-book"></i> Manage Courses</a></li>
+            <li><a href="admin_tickets.html"><i class="fas fa-life-ring"></i> Support Tickets</a></li>
+            <li><a href="admin_reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+            <li><a href="admin_settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Manage Students</h1>
+            <p>View, add, edit, or remove student records.</p>
+        </div>
+        <div class="section">
+            <div class="section-title"><i class="fas fa-users"></i> Student List</div>
+            <div class="search-bar">
+                <input type="text" id="studentSearch" placeholder="Search by name, email, or ID...">
+                <button class="add-btn" onclick="alert('Add Student Form')"><i class="fas fa-user-plus"></i> Add Student</button>
+            </div>
+            <table class="user-table" id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Batch</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+        // Example data (replace with backend/API)
+        const students = [
+            { id: "S1001", name: "Riya Mehra", email: "riya.mehra@campus.edu", batch: "2022", status: "Active" },
+            { id: "S1002", name: "Aman Gupta", email: "aman.gupta@campus.edu", batch: "2021", status: "Inactive" },
+            { id: "S1003", name: "Priya Singh", email: "priya.singh@campus.edu", batch: "2023", status: "Active" },
+            { id: "S1004", name: "Rahul Verma", email: "rahul.verma@campus.edu", batch: "2022", status: "Active" }
+        ];
+
+        function renderStudents(filter = "") {
+            const tbody = document.getElementById('studentsTable').querySelector('tbody');
+            tbody.innerHTML = "";
+            students.filter(s => 
+                s.name.toLowerCase().includes(filter) ||
+                s.email.toLowerCase().includes(filter) ||
+                s.id.toLowerCase().includes(filter)
+            ).forEach(student => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>${student.batch}</td>
+                    <td>${student.status}</td>
+                    <td>
+                        <button class="user-action-btn" onclick="alert('Edit ${student.name}')"><i class="fas fa-edit"></i></button>
+                        <button class="user-action-btn delete" onclick="alert('Delete ${student.name}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('studentSearch').addEventListener('input', function() {
+            renderStudents(this.value.trim().toLowerCase());
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderStudents();
+        });
+    </script>
+</body>
+</html>
