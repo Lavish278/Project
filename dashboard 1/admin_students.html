@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Students</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Common CSS from dashboard files */
+        :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: fixed; /* Corrected */
+            top: 0; /* Corrected */
+            left: 0; /* Corrected */
+            width: 100%; /* Corrected */
+            z-index: 1000; /* Corrected */
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+        .content {
+            margin-top: 50px;
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+            
+        }
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .search-bar {
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .search-bar input {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            width: 250px;
+        }
+        .add-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-left: auto;
+        }
+        .add-btn:hover {
+            background: var(--success-green);
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .user-table th, .user-table td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .user-table th {
+            background: var(--bg-neutral);
+            color: var(--primary-blue);
+        }
+        .user-table td {
+            background: var(--white);
+        }
+        .user-action-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-right: 0.3rem;
+            transition: var(--transition);
+        }
+        .user-action-btn.delete {
+            background: var(--error-red);
+        }
+        .user-action-btn:hover {
+            opacity: 0.85;
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1rem;
+            }
+            .form-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .form-group label {
+                width: 100%;
+                text-align: left;
+            }
+            .form-group input {
+                width: 100%;
+            }
+        }
+
+        /* Styles for the Add Student Form */
+        .form-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .form-group label {
+            width: 150px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="date"] {
+            flex-grow: 1;
+            padding: 0.6rem 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+                margin-top: 82px; /* Corrected */
+            }
+            .navbar {
+                padding: 1rem;
+            }
+            .form-container {
+                padding: 1rem;
+            }
+            .form-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .form-group label {
+                width: 100%;
+                text-align: left;
+            }
+            .form-group input[type="text"],
+            .form-group input[type="email"],
+            .form-group input[type="date"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect Admin</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">5</span>
+            </i>
+            <i class="fas fa-user-shield nav-icon" title="Admin Profile"></i>
+            <i class="fas fa-sign-out-alt nav-icon" title="Logout"></i>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="admin_dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="admin_students.html" class="active"><i class="fas fa-users"></i> Manage Students</a></li>
+            <li><a href="admin_faculty.html"><i class="fas fa-user-tie"></i> Manage Faculty</a></li>
+            <li><a href="admin_courses.html"><i class="fas fa-book"></i> Manage Courses</a></li>
+            <li><a href="admin_tickets.html"><i class="fas fa-life-ring"></i> Support Tickets</a></li>
+            <li><a href="admin_reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+            <li><a href="admin_settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Manage Students</h1>
+            <p>View, add, edit, or remove student records.</p>
+        </div>
+        <div class="section">
+            <div class="section-title"><i class="fas fa-users"></i> Student List</div>
+            <div class="search-bar">
+                <input type="text" id="studentSearch" placeholder="Search by name, email, or ID...">
+                <button class="add-btn" id="showAddStudentFormBtn"><i class="fas fa-user-plus"></i> Add Student</button>
+            </div>
+            <table class="user-table" id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Major</th>
+                        <th>Enrollment Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add New Student Form (Initially Hidden) -->
+        <div class="form-container" id="addStudentFormContainer" style="display: none;">
+            <div class="section-title"><i class="fas fa-user-plus"></i> Add New Student</div>
+            <form id="studentForm">
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="major">Major:</label>
+                    <input type="text" id="major">
+                </div>
+                <div class="form-group">
+                    <label for="enrollmentDate">Enrollment Date:</label>
+                    <input type="date" id="enrollmentDate">
+                </div>
+                <button type="submit" class="add-btn"><i class="fas fa-save"></i> Save</button>
+                <button type="button" class="add-btn" id="cancelAddStudent"><i class="fas fa-times"></i> Cancel</button>
+                <input type="hidden" id="studentId"> <!-- Hidden field for storing ID during edit -->
+            </form>
+            <div id="formMessage"></div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentsTableBody = document.getElementById('studentsTable').querySelector('tbody');
+            const studentSearchInput = document.getElementById('studentSearch');
+            const showAddStudentFormBtn = document.getElementById('showAddStudentFormBtn');
+            const addStudentFormContainer = document.getElementById('addStudentFormContainer');
+            const studentForm = document.getElementById('studentForm');
+            const cancelAddStudentBtn = document.getElementById('cancelAddStudent');
+            const formMessageDiv = document.getElementById('formMessage');
+
+            // Function to fetch and render students
+            async function fetchAndRenderStudents(filter = "") {
+                studentsTableBody.innerHTML = ""; // Clear existing table data
+                formMessageDiv.textContent = ""; // Clear previous messages
+
+                try {
+                    const response = await fetch('/api/students'); // Assuming this endpoint is protected and requires authentication
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const students = await response.json();
+
+                    const filteredStudents = students.filter(student =>
+                        (student.first_name + ' ' + student.last_name).toLowerCase().includes(filter) ||
+                        (student.email ? student.email.toLowerCase().includes(filter) : false) || // Handle potential null email
+                        (student.student_id ? student.student_id.toString().includes(filter) : false) // Handle potential null ID
+                    );
+
+
+                    filteredStudents.forEach(student => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${student.student_id || 'N/A'}</td>
+                            <td>${student.first_name} ${student.last_name}</td>
+                            <td>${student.email || 'N/A'}</td>
+                            <td>${student.major || 'N/A'}</td>
+                            <td>${student.enrollment_date ? new Date(student.enrollment_date).toLocaleDateString() : 'N/A'}</td>
+                            <td>
+                                <button class="user-action-btn" onclick="editStudent(${student.student_id})"><i class="fas fa-edit"></i></button>
+                                <button class="user-action-btn delete" onclick="deleteStudent(${student.student_id})"><i class="fas fa-trash"></i></button>
+                            </td>
+                        `;
+                        studentsTableBody.appendChild(tr);
+                    });
+                } catch (error) {
+                    console.error('Error fetching students:', error);
+                    formMessageDiv.textContent = 'Error loading students.';
+                    formMessageDiv.style.color = 'var(--error-red)';
+                }
+            }
+
+            // Initial render
+            fetchAndRenderStudents();
+
+            // Event listener for search input (using debounce for performance on larger datasets)
+            let searchTimeout;
+            studentSearchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    fetchAndRenderStudents(this.value.trim().toLowerCase());
+                }, 300); // Delay fetching by 300ms
+            });
+
+            // Show Add Student Form
+            showAddStudentFormBtn.addEventListener('click', function() {
+                addStudentFormContainer.style.display = 'block';
+                studentForm.reset(); // Clear the form for new entry
+                document.getElementById('studentId').value = ''; // Clear hidden ID field
+                document.querySelector('#studentForm button[type="submit"]').textContent = 'Save Student'; // Change button text
+                document.querySelector('#addStudentFormContainer .section-title').innerHTML = '<i class="fas fa-user-plus"></i> Add New Student'; // Change title
+                formMessageDiv.textContent = ""; // Clear messages
+            });
+
+            // Hide Add Student Form
+            cancelAddStudentBtn.addEventListener('click', function() {
+                addStudentFormContainer.style.display = 'none';
+                studentForm.reset(); // Clear the form
+                formMessageDiv.textContent = ""; // Clear messages
+            });
+
+            // Handle Student Form Submission (Add or Update)
+            studentForm.addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const studentId = document.getElementById('studentId').value;
+                const method = studentId ? 'PUT' : 'POST'; // Use PUT for update, POST for create
+                const url = studentId ? `/api/students/${studentId}` : '/api/students';
+
+                const studentData = {
+                    first_name: document.getElementById('firstName').value,
+                    last_name: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    major: document.getElementById('major').value,
+                    enrollment_date: document.getElementById('enrollmentDate').value
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                            // Include Authorization header with JWT if implementing authentication
+                            // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify(studentData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        formMessageDiv.textContent = `Student ${studentId ? 'updated' : 'added'} successfully!`;
+                        formMessageDiv.style.color = 'var(--success-green)';
+                        studentForm.reset(); // Clear the form
+                        document.getElementById('studentId').value = ''; // Clear hidden ID
+                        fetchAndRenderStudents(); // Refresh the student list
+                        // Optionally hide the form after success or keep it open
+                         addStudentFormContainer.style.display = 'none';
+                    } else {
+                        formMessageDiv.textContent = result.message || `Error ${studentId ? 'updating' : 'adding'} student.`;
+                        formMessageDiv.style.color = 'var(--error-red)';
+                    }
+                } catch (error) {
+                    console.error(`Error ${studentId ? 'updating' : 'adding'} student:`, error);
+                    formMessageDiv.textContent = 'An error occurred while saving the student.';
+                    formMessageDiv.style.color = 'var(--error-red)';
+                }
+            });
+
+            // Function to handle Edit button click
+            window.editStudent = async function(studentId) {
+                try {
+                    const response = await fetch(`/api/students/${studentId}`, {
+                         headers: {
+                            // Include Authorization header with JWT if implementing authentication
+                            // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    const student = await response.json();
+
+                    if (response.ok && student) {
+                        // Populate the form with student data
+                        document.getElementById('studentId').value = student.student_id;
+                        document.getElementById('firstName').value = student.first_name;
+                        document.getElementById('lastName').value = student.last_name;
+                        document.getElementById('email').value = student.email;
+                        document.getElementById('major').value = student.major || '';
+                        // Format date for input type="date" (YYYY-MM-DD)
+                        document.getElementById('enrollmentDate').value = student.enrollment_date ? new Date(student.enrollment_date).toISOString().split('T')[0] : '';
+
+                        // Show the form and change button/title for editing
+                        addStudentFormContainer.style.display = 'block';
+                        document.querySelector('#studentForm button[type="submit"]').textContent = 'Update Student';
+                        document.querySelector('#addStudentFormContainer .section-title').innerHTML = '<i class="fas fa-edit"></i> Edit Student';
+                        formMessageDiv.textContent = ""; // Clear messages
+                    } else {
+                         formMessageDiv.textContent = student.message || 'Error fetching student data for editing.';
+                         formMessageDiv.style.color = 'var(--error-red)';
+                    }
+                } catch (error) {
+                    console.error('Error fetching student for edit:', error);
+                    formMessageDiv.textContent = 'An error occurred while fetching student data.';
+                    formMessageDiv.style.color = 'var(--error-red)';
+                }
+            };
+
+            window.deleteStudent = async function(studentId) {
+                if (confirm('Are you sure you want to delete this student?')) {
+                    try {
+                        const response = await fetch(`/api/students/${studentId}`, {
+                            method: 'DELETE',
+                             headers: {
+                                // Include Authorization header with JWT if implementing authentication
+                                // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            formMessageDiv.textContent = 'Student deleted successfully!';
+                            formMessageDiv.style.color = 'var(--success-green)';
+                            fetchAndRenderStudents(); // Refresh the list
+                        } else {
+                            formMessageDiv.textContent = result.message || 'Error deleting student.';
+                            formMessageDiv.style.color = 'var(--error-red)';
+                        }
+                    } catch (error) {
+                        console.error('Error deleting student:', error);
+                        formMessageDiv.textContent = 'An error occurred while deleting the student.';
+                        formMessageDiv.style.color = 'var(--error-red)';
+                    }
+                }
+            };
+        });
+    </script>
+</body>
+</html>

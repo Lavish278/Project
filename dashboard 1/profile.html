@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Connect - Personal Details</title>
+    <!-- FontAwesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-blue);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid var(--primary-blue);
+        }
+
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .details-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .details-label {
+            width: 140px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .edit-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .edit-btn:hover {
+            background: var(--success-green);
+        }
+
+        .edit-field {
+            border: 1px solid var(--bg-neutral);
+            border-radius: 5px;
+            padding: 0.4rem 0.7rem;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .save-btn {
+            background: var(--success-green);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .save-btn:hover {
+            background: var(--primary-blue);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">3</span>
+            </i>
+            <i class="fas fa-question-circle nav-icon" title="Query Management"></i>
+            <i class="fas fa-user-circle nav-icon" title="Profile"></i>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="courses.html"><i class="fas fa-book"></i> My Courses</a></li>
+            <li><a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+            <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades / Results</a></li>
+            <li><a href="profile.html" class="active"><i class="fas fa-user"></i> Personal Details</a></li>
+            <li><a href="mentor.html"><i class="fas fa-chalkboard-teacher"></i> Mentor</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="help.html"><i class="fas fa-life-ring"></i> Query Management</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Personal Details</h1>
+            <p>View and update your personal information.</p>
+        </div>
+        <div class="card" id="profileCard">
+            <h3><i class="fas fa-user card-icon"></i> Student Profile</h3>
+            <div style="text-align:center;">
+                <img src="images/profile.jpg" alt="Profile Picture" class="profile-pic" id="profilePic">
+            </div>
+            <ul class="details-list" id="detailsList">
+                <!-- Populated by JS -->
+            </ul>
+            <button class="edit-btn" id="editBtn"><i class="fas fa-edit"></i> Edit</button>
+        </div>
+    </main>
+
+    <script>
+        // Backend-ready: Fetch and update personal details
+        let profileData = {
+            // This will be populated from backend
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProfile();
+            document.getElementById('editBtn').addEventListener('click', enableEdit);
+        });
+
+        function renderProfile(editMode = false) {
+            const detailsList = document.getElementById('detailsList');
+            detailsList.innerHTML = '';
+
+            // Map backend fields to frontend display names and IDs
+            const fields = [
+                { label: 'First Name', key: 'first_name', id: 'editFirstName', editable: true },
+                { label: 'Last Name', key: 'last_name', id: 'editLastName', editable: true },
+                { label: 'Roll No', key: 'student_id', id: 'editRoll', editable: false }, // Assuming student_id is the roll number
+                { label: 'Email', key: 'email', id: 'editEmail', editable: true },
+                { label: 'Phone', key: 'phone', id: 'editPhone', editable: true }, // Assuming a 'phone' field exists or will be added
+                { label: 'Date of Birth', key: 'dob', id: 'editDob', type: 'date', editable: true }, // Assuming a 'dob' field exists or will be added
+                { label: 'Major', key: 'major', id: 'editMajor', editable: true }, // Using 'major' from DB schema
+                { label: 'Enrollment Date', key: 'enrollment_date', id: 'editEnrollmentDate', type: 'date', editable: false }, // Using 'enrollment_date' from DB schema
+                { label: 'Address', key: 'address', id: 'editAddress', editable: true } // Assuming an 'address' field exists or will be added
+            ];
+
+            if (!editMode) {
+                // Display mode
+                fields.forEach(field => {
+                    // Handle potential missing fields in profileData
+                    const value = profileData[field.key] !== undefined ? profileData[field.key] : 'N/A';
+                    detailsList.innerHTML += `
+                        <li>
+                            <span class="details-label">${field.label}:</span>
+                            ${field.key === 'first_name' || field.key === 'last_name'
+                                ? profileData.first_name + ' ' + profileData.last_name // Combine for display mode
+                                : value
+                            }
+                            ${field.key === 'last_name' ? '' : ''} <!-- Prevent duplicate display for Name -->
+                        </li>
+                    `;
+                    if (field.key === 'last_name') return; // Skip last name as it's combined with first name for display
+                    `;
+                });
+                document.getElementById('editBtn').style.display = 'inline-block';
+            } else {
+                // Edit mode
+                fields.forEach(field => {
+                    const value = profileData[field.key] !== undefined ? profileData[field.key] : '';
+                    const disabled = field.editable ? '' : 'disabled';
+                    const type = field.type || 'text';
+                    detailsList.innerHTML += `
+                        <li>
+                            <span class="details-label">${field.label}:</span>
+                            ${field.key === 'student_id' || field.key === 'enrollment_date' // Non-editable fields
+                                ? `<span>${value}</span>`
+                                : `<input class="edit-field" id="${field.id}" value="${value}" type="${type}" ${disabled}>`
+                            }
+                        </li>
+                    `;
+
+                });
+
+                document.getElementById('editBtn').style.display = 'none';
+                // Add Save button
+                if (!document.getElementById('saveBtn')) {
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'save-btn';
+                    saveBtn.id = 'saveBtn';
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                    saveBtn.onclick = saveProfile;
+                    document.getElementById('profileCard').appendChild(saveBtn);
+                }
+            }
+            // Remove Save button if not in edit mode
+            if (!editMode && document.getElementById('saveBtn')) {
+                document.getElementById('saveBtn').remove();
+            }
+        }
+
+        function enableEdit() {
+            renderProfile(true);
+        }
+
+        function saveProfile() {
+            const updatedData = {
+                // Collect updated data from editable fields
+                first_name: document.getElementById('editFirstName').value,
+                last_name: document.getElementById('editLastName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                dob: document.getElementById('editDob').value,
+                major: document.getElementById('editMajor').value,
+                address: document.getElementById('editAddress').value,
+                // Include non-editable but necessary fields for update if required by backend
+                // student_id: profileData.student_id
+            };
+
+            // Assuming the student ID is available in profileData after fetching
+            const studentId = profileData.student_id;
+            if (!studentId) {
+                console.error('Student ID not available for update.');
+                return;
+            }
+
+            fetch(`/api/students/${studentId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Profile updated successfully:', data);
+                // After successful update, refetch profile data to display the latest
+                fetchProfile();
+            })
+            .catch(error => {
+                console.error('Error updating profile:', error);
+                // Optionally display an error message to the user
+            });
+        }
+
+        // Fetch profile data when the page loads
+        fetchProfile();
+
+        async function fetchProfile() {
+            // Placeholder for getting the logged-in student ID
+            // IMPORTANT: In a real application, this ID must be securely obtained from the authenticated user's session or JWT.
+            const loggedInStudentId = 1; // <<< REPLACE THIS with actual logic after implementing authentication.
+
+            try {
+                const response = await fetch(`/api/students/${loggedInStudentId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const studentData = await response.json();
+                if (studentData.length > 0) {
+                    // Assuming the endpoint returns an array with one student object
+                    profileData = studentData[0];
+                    renderProfile(); // Render in display mode
+                } else {
+                    console.warn('Student data not found for ID:', loggedInStudentId);
+                    // Optionally display a message indicating data was not found
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+                // Optionally display an error message to the user
+            }
+        }
+    </script>
+</body>
+</html>
