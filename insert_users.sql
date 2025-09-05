@@ -1,0 +1,1 @@
+INSERT INTO users (username, password, role) VALUES ('student1', 'password123', 'student'), ('faculty1', 'password123', 'faculty'), ('admin1', 'password123', 'admin');
