@@ -1,11 +1,8 @@
 const express = require('express');
-const { login } = require('../controllers/authController'); // Adjust path as needed
-
 const router = express.Router();
+const { login } = require('../controllers/authController');
 
-// @desc    Authenticate user & get token
-// @route   POST /api/auth/login
-// @access  Public
+// Login route
 router.post('/login', login);
 
 module.exports = router;

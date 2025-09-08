@@ -1,50 +1,37 @@
-const db = require('../server'); // Assuming your database connection is exported from server.js
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const pool = require('../server'); // Assuming server.js exports the pool
 
-// You should store your JWT secret in environment variables
-const jwtSecret = process.env.JWT_SECRET;
-exports.login = async (req, res) => {
-  try {
-    // 1. Extract email and password from the request body.
+const login = (req, res) => {
     const { email, password } = req.body;
 
+    // Basic validation
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
+        return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // 2. Fetch the user from the 'users' table by email.
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-      if (err) {
-        console.error('Error fetching user:', err);
-        return res.status(500).json({ message: 'Internal server error' });
-      }
+    // Query the database to find the user
+    pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err) {
+            console.error('Error querying the database:', err);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
 
-      if (results.length === 0) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-      }
+        // Check if user exists
+        if (results.length === 0) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
-      const user = results[0];
+        const user = results[0];
 
-      // 3. Comparing the provided password with the stored hashed password using bcrypt.
-      const isMatch = await bcrypt.compare(password, user.password);
+        // TODO: Implement password hashing and comparison
+        // For now, using a simple password comparison
+        if (password !== user.password) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
-      if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-      }
+        // TODO: Implement session management or JWT for authentication
 
-      // 4. Generating a JWT upon successful login.
-      const token = jwt.sign({ id: user.user_id, role: user.role }, jwtSecret, { expiresIn: '1h' }); // Token expires in 1 hour
-
-      // 5. Sending the JWT in the response.
-      res.status(200).json({ token });
+        res.status(200).json({ message: 'Login successful', user });
     });
-
-  } catch (error) {
-    console.error('Error in login function:', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
 };
 
-// You can add other authentication functions here, e.g., register
-// exports.register = async (req, res) => { ... };
+module.exports = { login };

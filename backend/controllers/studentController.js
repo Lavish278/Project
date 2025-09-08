@@ -37,6 +37,9 @@ exports.createStudent = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
+    const { first_name, last_name, email, major, enrollment_date } = req.body;
+
+    try {
         const [result] = await db.promise().query(
             'INSERT INTO students (first_name, last_name, email, major, enrollment_date) VALUES (?, ?, ?, ?, ?)',
             [first_name, last_name, email, major, enrollment_date]
@@ -59,7 +62,9 @@ exports.updateStudent = async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
 
+    const { first_name, last_name, email, major, enrollment_date } = req.body;
 
+    try {
         const [result] = await db.promise().query(
             'UPDATE students SET first_name = ?, last_name = ?, email = ?, major = ?, enrollment_date = ? WHERE student_id = ?',
             [first_name, last_name, email, major, enrollment_date, studentId]
@@ -82,6 +87,9 @@ exports.deleteStudent = async (req, res) => {
 
     try {
         const [result] = await db.promise().query('DELETE FROM students WHERE student_id = ?', [studentId]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Student not found' });
+        }
         res.json({ message: 'Student deleted successfully' });
     } catch (error) {
         console.error(`Error deleting student with ID ${studentId}:`, error);
