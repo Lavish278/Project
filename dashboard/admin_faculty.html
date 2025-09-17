@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Faculty</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: fixed; /* Corrected */
+            top: 0; /* Corrected */
+            left: 0; /* Corrected */
+            width: 100%; /* Corrected */
+            z-index: 1000; /* Corrected */
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+        .content {
+            margin-top: 50px;
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+        }
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .search-bar {
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .search-bar input {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            width: 250px;
+        }
+        .add-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-left: auto;
+        }
+        .add-btn:hover {
+            background: var(--success-green);
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .user-table th, .user-table td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .user-table th {
+            background: var(--bg-neutral);
+            color: var(--primary-blue);
+        }
+        .user-table td {
+            background: var(--white);
+        }
+        .user-action-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            margin-right: 0.3rem;
+            transition: var(--transition);
+        }
+        .user-action-btn.delete {
+            background: var(--error-red);
+        }
+        .user-action-btn:hover {
+            opacity: 0.85;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect Admin</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">5</span>
+            </i>
+            <i class="fas fa-user-shield nav-icon" title="Admin Profile"></i>
+            <i class="fas fa-sign-out-alt nav-icon" title="Logout"></i>
+        </div>
+    </nav>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" id="sidebar">
+    <ul>
+        <li><a href="/dashboard/admin_dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="/dashboard/admin_students.html"><i class="fas fa-users"></i> Manage Students</a></li>
+        <li><a href="/dashboard/admin_faculty.html" class="active"><i class="fas fa-user-tie"></i> Manage Faculty</a></li>
+        <li><a href="/dashboard/admin_courses.html"><i class="fas fa-book"></i> Manage Courses</a></li>
+        <li><a href="/dashboard/admin_query_management.html"><i class="fas fa-life-ring"></i> Query Management</a></li>
+        <li><a href="/dashboard/admin_reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+        <li><a href="/dashboard/admin_settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+    </ul>
+</aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Manage Faculty</h1>
+            <p>View, add, edit, or remove faculty records.</p>
+ <div id="message" style="margin-top: 1rem;"></div>
+        </div>
+ <div id="addFacultySection" class="section" style="display:none;">
+            <div class="section-title"><i class="fas fa-user-plus"></i> Add New Faculty</div>
+ <form id="addFacultyForm">
+                <!-- Faculty form fields will be added here later -->
+ </form>
+        </div>
+
+        <div class="section">
+            <div class="section-title"><i class="fas fa-user-tie"></i> Faculty List</div>
+            <div class="search-bar">
+ <input type="text" id="facultySearch" placeholder="Search by name, email...">
+                <button id="addFacultyBtn" class="add-btn"><i class="fas fa-user-plus"></i> Add Faculty</button>
+            </div>
+            <table class="user-table" id="facultyTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <!-- <th>Department</th> -->
+                        <!-- <th>Status</th> -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Faculty data will be populated here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchFaculty();
+        });
+
+        async function fetchFaculty() {
+            try {
+                const response = await fetch('/api/faculty'); // Fetch data from the backend API
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const faculty = await response.json();
+                renderFaculty(faculty); // Pass the fetched data to render function
+            } catch (error) {
+                console.error('Error fetching faculty:', error);
+                displayMessage('Error fetching faculty data.', 'error');
+            }
+        }
+
+        function renderFaculty(facultyList) {
+ // Assuming facultyList is the array of faculty objects from the API
+            const tbody = document.getElementById('facultyTable').querySelector('tbody');
+            tbody.innerHTML = "";
+ const filter = document.getElementById('facultySearch').value.trim().toLowerCase();
+            // Basic rendering - assumes facultyList is an array of faculty objects
+            // You might need to adjust property names based on your backend response
+            facultyList.forEach(facultyMember => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${facultyMember.faculty_id || 'N/A'}</td>
+                    <td>${facultyMember.first_name || ''} ${facultyMember.last_name || ''}</td>
+                    <td>${facultyMember.email || 'N/A'}</td>
+                    <td>
+ <button class="user-action-btn edit-btn" data-id="${facultyMember.faculty_id}"><i class="fas fa-edit"></i></button>
+                        <button class="user-action-btn delete" onclick="deleteFaculty('${facultyMember.faculty_id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                // Simple client-side filtering for demonstration
+                if (
+                    facultyMember.first_name.toLowerCase().includes(filter) ||
+                    facultyMember.last_name.toLowerCase().includes(filter) ||
+                    facultyMember.email.toLowerCase().includes(filter)
+                ) {
+                    tbody.appendChild(tr);
+                }
+            });
+        }
+
+        // Placeholder functions for edit and delete
+
+        async function deleteFaculty(facultyId) {
+            if (confirm('Are you sure you want to delete this faculty member?')) {
+                try {
+                    const response = await fetch(`/api/faculty/${facultyId}`, {
+                        method: 'DELETE',
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    displayMessage('Faculty deleted successfully.', 'success');
+                    fetchFaculty(); // Refresh the list
+                } catch (error) {
+                    console.error('Error deleting faculty:', error);
+                    displayMessage('Error deleting faculty.', 'error');
+                }
+            }
+        }
+
+        // Simple client-side search - re-renders the table based on current filter
+        document.getElementById('facultySearch').addEventListener('input', function(event) {
+            // Re-fetch data or filter existing data
+            // For this example, we'll re-fetch and let renderFaculty do the filtering
+            fetchFaculty();
+        });
+
+        // Function to display messages
+        function displayMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message-${type}">${message}</div>`;
+            // Add basic styling for messages (you might want to add this to your CSS)
+            if (!document.getElementById('message-styles')) {
+                const style = document.createElement('style');
+                style.id = 'message-styles';
+                style.innerHTML = `
+                    .message-success { color: var(--success-green); }
+                    .message-error { color: var(--error-red); }
+                `;
+                document.head.appendChild(style);
+            }
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000); // Hide message after 5 seconds
+        }
+
+        // Add event listener for the Add Faculty button
+        document.getElementById('addFacultyBtn').addEventListener('click', function() {
+            const addSection = document.getElementById('addFacultySection');
+            addSection.style.display = addSection.style.display === 'none' ? 'block' : 'none';
+            displayMessage('Add Faculty form toggled.', 'success'); // Example feedback
+        });
+
+            // You would typically call a fetch with a query parameter here or filter the fetched array
+            // Example: fetchFaculty(filter);
+        });
+
+        function displayMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000); // Hide message after 5 seconds
+        }
+
+        // Event listener for edit buttons (using event delegation)
+        document.getElementById('facultyTable').addEventListener('click', function(event) {
+            if (event.target.closest('.edit-btn')) {
+                const facultyId = event.target.closest('.edit-btn').dataset.id;
+                // Implement logic to fetch faculty data by ID and populate a form for editing
+                displayMessage('Edit faculty with ID: ' + facultyId, 'success'); // Example feedback
+            }
+        });
+
+        // Initial fetch on page load
+        fetchFaculty();
+    </script>
+</body>
+</html>

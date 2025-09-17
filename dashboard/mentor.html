@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Connect - Mentor</title>
+    <!-- FontAwesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-blue);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        .mentor-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid var(--primary-blue);
+        }
+
+        .mentor-details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mentor-details-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mentor-label {
+            width: 140px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .contact-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .contact-btn:hover {
+            background: var(--success-green);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">3</span>
+            </i>
+            <i class="fas fa-question-circle nav-icon" title="Help"></i>
+            <i class="fas fa-user-circle nav-icon" title="Profile"></i>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="courses.html"><i class="fas fa-book"></i> My Courses</a></li>
+            <li><a href="attendance.html"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+            <li><a href="grades.html"><i class="fas fa-chart-line"></i> Grades / Results</a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> Personal Details</a></li>
+            <li><a href="mentor.html" class="active"><i class="fas fa-chalkboard-teacher"></i> Mentor</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="help.html"><i class="fas fa-life-ring"></i> Help Desk</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Mentor</h1>
+            <p>Your assigned academic mentor and their contact details.</p>
+        </div>
+        <div class="card" id="mentorCard">
+            <h3><i class="fas fa-chalkboard-teacher card-icon"></i> Academic Mentor</h3>
+            <div style="text-align:center;">
+                <img src="images/mentor.jpg" alt="Mentor Picture" class="mentor-pic" id="mentorPic">
+            </div>
+            <ul class="mentor-details-list" id="mentorDetailsList">
+                <!-- Populated by JS -->
+            </ul>
+            <button class="contact-btn" id="contactBtn"><i class="fas fa-envelope"></i> Email Mentor</button>
+        </div>
+    </main>
+
+    <script>
+        // Backend-ready: Fetch mentor details from API and populate the card
+        document.addEventListener('DOMContentLoaded', function() {
+ fetchMentorDetails();
+        });
+
+        async function fetchMentorDetails() {
+            // Assuming you have an endpoint to get the logged-in student's mentor
+            // This might be /api/students/:studentId/mentor or a dedicated /api/mentor/:mentorId
+            // For now, let's assume a placeholder endpoint that returns mentor data
+            // IMPORTANT: Replace '123' with the actual logged-in student's ID after authentication
+            const studentId = '123'; // <<< REPLACE WITH ACTUAL STUDENT ID
+
+            try {
+                // Replace '/api/students/${studentId}/mentor' with your actual backend endpoint
+                const response = await fetch(`/api/students/${studentId}/mentor`, {
+                    headers: {
+                         // Assuming token is stored in localStorage after login
+                         'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                    }
+                });
+                if (!response.ok) {
+                    // Handle specific errors like 404 if mentor is not assigned
+                    if (response.status === 404) {
+                         document.getElementById('mentorDetailsList').innerHTML = '<li>No mentor assigned.</li>';
+                         document.getElementById('contactBtn').style.display = 'none'; // Hide button
+                         return;
+                    }
+                    const errorData = await response.json();
+                    throw new Error(`Failed to fetch mentor details: ${errorData.message || response.statusText}`);
+                }
+                const mentorData = await response.json();
+                renderMentor(mentorData);
+        function renderMentor() {
+            const detailsList = document.getElementById('mentorDetailsList');
+            detailsList.innerHTML = `
+                <li><span class="mentor-label">Name:</span> ${mentorData.name}</li>
+                <li><span class="mentor-label">Designation:</span> ${mentorData.designation || 'N/A'}</li>
+                <li><span class="mentor-label">Department:</span> ${mentorData.department || 'N/A'}</li>
+                <li><span class="mentor-label">Email:</span> <a href="mailto:${mentorData.email || ''}">${mentorData.email || 'N/A'}</a></li>
+                <li><span class="mentor-label">Phone:</span> <a href="tel:${mentorData.phone || ''}">${mentorData.phone || 'N/A'}</a></li>
+                <li><span class="mentor-label">Office:</span> ${mentorData.office || 'N/A'}</li>
+                <li><span class="mentor-label">Office Hours:</span> ${mentorData.office_hours || 'N/A'}</li>
+            `;
+
+                // Update the 'Email Mentor' button's click handler
+                const contactBtn = document.getElementById('contactBtn');
+                if (mentorData.email) {
+                    contactBtn.style.display = 'inline-block'; // Show button if email exists
+                    contactBtn.onclick = function() {
+                        window.location.href = "mailto:" + mentorData.email;
+                    };
+                } else {
+                    contactBtn.style.display = 'none'; // Hide button if no email
+                }
+
+            } catch (error) {
+                console.error('Error fetching mentor details:', error);
+                document.getElementById('mentorDetailsList').innerHTML = '<li>Error loading mentor details.</li>';
+            }
+        }
+    </script>
+</body>
+</html>

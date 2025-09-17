@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        :root {
+            --primary-blue: #0367A5;
+            --success-green: #198038;
+            --warning-yellow: #F1C21B;
+            --text-dark: #1C1C1C;
+            --text-gray: #6F6F6F;
+            --bg-neutral: #F5F7FA;
+            --error-red: #DA1E28;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;\
+            --transition: all 0.3s ease;
+        }
+        body {
+            background-color: var(--bg-neutral);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .nav-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);\
+            position: relative;
+        }
+
+        .nav-icon:hover {
+            background-color: var(--bg-neutral);
+            transform: scale(1.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--error-red);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 82px;
+            left: 0;
+            width: 260px;
+            height: calc(100vh - 82px);
+            background: linear-gradient(180deg, var(--primary-blue), #024a7a);
+            color: var(--white);
+            overflow-y: auto;
+            z-index: 90;
+            transition: var(--transition);
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 1rem 0;
+        }
+        .sidebar ul li {
+            margin: 0.2rem 0;
+        }
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--warning-yellow);
+            transform: translateX(5px);
+        }
+        .sidebar ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+        .content {
+            margin-top: 50px;
+            margin-left: 260px;
+            
+            padding: 2rem;
+            min-height: calc(100vh - 82px);
+        }
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .settings-form label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+        .settings-form input, .settings-form select {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+        .settings-form button {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        .settings-form button:hover {
+            background: var(--success-green);
+        }
+        .divider {
+            border-top: 1px solid #eee;
+            margin: 2rem 0 1.5rem 0;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+ <div class="nav-logo">
+                <img src="images/logo.png" alt="Logo">
+            </div>
+            <span class="nav-title">Campus Connect</span>
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">0</span>
+            </i>
+            <i class="fas fa-question-circle nav-icon" title="Help"></i>
+            <i class="fas fa-user-circle nav-icon" title="Profile"></i>
+
+        </div>
+        <div class="nav-right">
+            <i class="fas fa-bell nav-icon" title="Notifications">
+                <span class="notification-badge" id="notifCount">5</span>
+            </i>
+            <i class="fas fa-user-shield nav-icon" title="Admin Profile"></i>
+            <i class="fas fa-sign-out-alt nav-icon" title="Logout"></i>
+
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="admin_dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="admin_students.html"><i class="fas fa-users"></i> Manage Students</a></li>
+            <li><a href="admin_faculty.html"><i class="fas fa-user-tie"></i> Manage Faculty</a></li>
+            <li><a href="admin_courses.html"><i class="fas fa-book"></i> Manage Courses</a></li>
+            <li><a href="admin_query_management.html"><i class="fas fa-question-circle"></i> Query Management</a></li>
+            <li><a href="admin_reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+            <li><a href="admin_settings.html" class="active"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content">
+        <div class="page-header">
+            <h1>Settings</h1>
+            <p>Update your profile, change password, and configure system preferences.</p>
+        </div>
+ <div id="settingsMessage" style="margin-bottom: 15px;"></div>
+        <div class="section">
+            <div class="section-title"><i class="fas fa-user-cog"></i> Profile Information</div>
+            <form class="settings-form" id="profileForm" onsubmit="event.preventDefault(); alert('Profile updated!');">
+                <label for="adminName">Name</label>
+                <input type="text" id="adminName" value="Admin User" required>
+                <label for="adminEmail">Email</label>
+                <input type="email" id="adminEmail" value="admin@campus.edu" required>\
+                <button type="submit"><i class="fas fa-save"></i> Save Changes</button>
+            </form>
+            <div class="divider"></div>
+            <div class="section-title"><i class="fas fa-key"></i> Change Password</div>
+            <form class="settings-form" id="passwordForm">
+                <label for="currentPassword">Current Password</label>
+                <input type="password" id="currentPassword" required>
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" required>
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" required>
+                <button type="submit"><i class="fas fa-key"></i> Change Password</button>
+            </form>
+            <div class="divider"></div>
+            <div class="section-title"><i class="fas fa-sliders-h"></i> System Preferences</div>
+            <form class="settings-form" id="preferencesForm" onsubmit="event.preventDefault(); alert('Preferences saved!');">
+                <label for="themeSelect">Theme</label>
+                <select id="themeSelect">
+                    <option value="light" selected>Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+                <label for="notifToggle">Email Notifications</label>
+                <input type="checkbox" id="notifToggle" checked>
+                <button type="submit"><i class="fas fa-save"></i> Save Preferences</button>
+            </form>
+        </div>
+    </main>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Function to display messages
+        function displaySettingsMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('settingsMessage');
+            messageDiv.textContent = message;
+            messageDiv.style.padding = '10px';
+            messageDiv.style.borderRadius = '5px';
+            messageDiv.style.marginBottom = '15px';
+
+            // Basic styling based on type
+            switch (type) {
+                case 'success':
+                    messageDiv.style.backgroundColor = '#d4edda'; // Light green
+                    messageDiv.style.color = '#155724'; // Dark green
+                    break;
+                case 'error':
+                    messageDiv.style.backgroundColor = '#f8d7da'; // Light red
+                    messageDiv.style.color = '#721c24'; // Dark red
+                    break;
+                case 'info':
+                default:
+                    messageDiv.style.backgroundColor = '#cfe2ff'; // Light blue
+                    messageDiv.style.color = '#084298'; // Dark blue
+                    break;
+            }
+
+            // Clear message after a few seconds
+            setTimeout(() => {
+                messageDiv.textContent = '';
+                messageDiv.style.padding = '0';
+                messageDiv.style.backgroundColor = 'transparent';
+                messageDiv.style.color = 'initial';
+            }, 5000);
+        }
+
+        // Function to fetch admin profile data
+        async function fetchAdminProfile() {
+            try {
+                // Replace with your actual endpoint and include authentication headers
+                const response = await fetch('/api/admin/profile', {
+                    headers: {
+                         'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('adminName').value = data.name || ''; // Assuming backend returns 'name'
+                    document.getElementById('adminEmail').value = data.email || ''; // Assuming backend returns 'email'
+                } else if (response.status === 404) {
+ displaySettingsMessage('Admin profile not found.', 'error');
+                }else {
+                    displaySettingsMessage(`Failed to load profile: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching admin profile:', error);
+                displaySettingsMessage('An error occurred while fetching profile.', 'error');
+            }
+        }
+
+        // Fetch profile data on page load
+        fetchAdminProfile();
+
+        // Add event listeners for form submissions (will be implemented in later steps)
+ document.getElementById('profileForm').addEventListener('submit', saveProfile);
+        document.getElementById('passwordForm').addEventListener('submit', changePassword);
+        document.getElementById('preferencesForm').addEventListener('submit', savePreferences);
+
+        // Function to fetch admin settings data
+        async function fetchAdminSettings() {
+            try {
+                // Replace with your actual endpoint and include authentication headers
+                const response = await fetch('/api/admin/settings', {
+                    headers: {
+                         'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    }
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    document.getElementById('themeSelect').value = data.theme || 'light'; // Assuming backend returns 'theme'
+                    document.getElementById('notifToggle').checked = data.emailNotifications === true; // Assuming backend returns boolean
+                } else if (response.status === 404) {
+                    displaySettingsMessage('Admin settings not found.', 'error');
+                } else {
+                    displaySettingsMessage(`Failed to load settings: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching admin settings:', error);
+                displaySettingsMessage('An error occurred while fetching settings.', 'error');
+            }
+        }
+
+        // Function to save admin profile changes
+        async function saveProfile(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const adminName = document.getElementById('adminName').value;
+            const adminEmail = document.getElementById('adminEmail').value;
+
+            try {
+                const response = await fetch('/api/admin/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    },
+                    body: JSON.stringify({ name: adminName, email: adminEmail }) // Assuming backend expects 'name' and 'email'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displaySettingsMessage('Profile updated successfully!', 'success');
+                    fetchAdminProfile(); // Refresh displayed data
+                } else {
+                    displaySettingsMessage(`Failed to update profile: ${data.message || 'Server Error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving admin profile:', error);
+                displaySettingsMessage('An error occurred while saving profile.', 'error');
+            }
+        }
+
+        // Function to change admin password
+        async function changePassword(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Client-side validation
+            if (newPassword !== confirmPassword) {
+                displaySettingsMessage('New password and confirm password do not match.', 'error');
+                return;
+            }
+            if (newPassword.length < 6) { // Basic minimum length check
+                displaySettingsMessage('New password must be at least 6 characters long.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/change-password', {
+                    method: 'POST', // Or PUT, depending on your backend design
+                    headers: {
+                        'Content-Type': 'application/json',
+                         'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displaySettingsMessage('Password changed successfully!', 'success');
+                    document.getElementById('passwordForm').reset(); // Clear the form on success
+                } else {
+                    displaySettingsMessage(`Failed to change password: ${data.message || 'Server Error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                displaySettingsMessage('An error occurred while changing password.', 'error');
+            }
+        }
+
+        // Function to save general settings
+        async function savePreferences(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const theme = document.getElementById('themeSelect').value;
+            const emailNotifications = document.getElementById('notifToggle').checked;
+
+            try {
+                const response = await fetch('/api/admin/settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                         'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
+                    },
+                    body: JSON.stringify({ theme, emailNotifications }) // Assuming backend expects 'theme' and 'emailNotifications'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displaySettingsMessage('Preferences saved successfully!', 'success');
+                } else {
+                    displaySettingsMessage(`Failed to save preferences: ${data.message || 'Server Error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+                displaySettingsMessage('An error occurred while saving preferences.', 'error');
+            }
+        }
+    });
+</script>
+</html>
